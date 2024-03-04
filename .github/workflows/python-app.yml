@@ -31,3 +31,6 @@ jobs:
     - name: Test with pytest --pylint
       run: |
         pytest
+    - name: Show pytest coverage with pytest --pylint --cov
+      run: |
+        pytest --pylint --cov
