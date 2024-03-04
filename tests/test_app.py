@@ -14,7 +14,7 @@ def app_instance():
     app.command_handler.register_command("dummy", DummyCommand())
     return app
 
-def test_app_plugin_registration(monkeypatch, app_instance):
+def test_app_load_plugin(monkeypatch, app_instance):
     ''' tests for plugins to be registered '''
     # Mock iter_modules to simulate finding plugins
     mock_iter_modules = [(None, 'dummy_plugin', True)]
@@ -25,7 +25,7 @@ def test_app_plugin_registration(monkeypatch, app_instance):
     dummy_plugin_module.DummyCommand = DummyCommand
     monkeypatch.setattr('importlib.import_module', lambda _: dummy_plugin_module)
 
-    app_instance.pluginRegistration()
+    app_instance.pluginLoad()
     # Check if 'dummy_plugin' is registered, adjust according to your implementation
     assert 'dummy_plugin' in app_instance.command_handler.commands
 
