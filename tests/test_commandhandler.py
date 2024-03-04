@@ -20,7 +20,7 @@ def test_command_execute():
     ''' tests the Command Class's instaniation'''
     result = TestCommand().execute()
     assert result == "Command executed with args: ", "The execute method should return 'Command executed with args: '"
-    
+
 def test_handler_index_error(capsys):
     ''' tests index error occurance'''
     CommandHandler().execute_command(command_line="")

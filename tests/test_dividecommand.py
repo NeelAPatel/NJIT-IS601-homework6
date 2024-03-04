@@ -20,4 +20,3 @@ def test_divide_command_with_non_decimal_input():
     divide_command = DivideCommand()
     result = divide_command.execute('abc', 'xyz')
     assert result == "Invalid input. Please enter two Decimal numbers."
-
