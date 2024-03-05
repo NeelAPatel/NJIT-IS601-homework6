@@ -6,7 +6,7 @@ from app.commands import Command
 from decimal import Decimal, InvalidOperation
 
 from app.plugins.calc.calculator import Calculator
-
+import logging
 
 class CalcCommand(Command): 
 
@@ -37,14 +37,14 @@ class CalcCommand(Command):
             if curr_operation:
                 print(f"Result: {a} {operation_name} {b} = {curr_operation(a_decimal, b_decimal)}")
             else:
-                print(f"Unknown operation: {operation_name}")
+                logging.error(f"Unknown operation: {operation_name}")
 
         except InvalidOperation: # not a number
-            print(f"Invalid number input: {a} or {b} is not a valid number.")
+            logging.error(f"Invalid number input: {a} or {b} is not a valid number: {InvalidOperation}")
         except ZeroDivisionError: # Dividing by zero
-            print("An error occurred: Cannot divide by zero.")
+            logging.error(f"An error occurred: Cannot divide by zero.")
         except Exception as e: # Catch-all for unexpected errors
-            print(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {e}")
 
 
 

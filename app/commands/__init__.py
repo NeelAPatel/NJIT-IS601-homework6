@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import logging
 
 
 class Command(ABC):
@@ -23,14 +24,12 @@ class CommandHandler:
         try:
             parts = command_line.split()
             command_name = parts[0]
-        except IndexError:
-            print("No command entered.")
+        except IndexError as e:
+            logging.error(f"IndexError: No command entered\n")
             return
         
         # SOMETHING was entered, might not be a command
         command = self.commands.get(command_name)
-        
-
 
         if command: # if command is not null
 
@@ -42,8 +41,7 @@ class CommandHandler:
                 result = command.execute(*args)
                 if result is not None: 
                     print(result)
-                # print(result)
             except Exception as e:
-                print(f"Error executing command '{command_name}': {e}")
+                logging.error(f"Error executing command '{command_name}': {e}")
         else:
-            print(f"Command '{command_name}' not found.")
+            logging.error(f"Command '{command_name}' not found.")

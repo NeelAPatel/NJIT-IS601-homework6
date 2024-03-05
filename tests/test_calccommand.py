@@ -1,5 +1,6 @@
 '''This module tests the calc plugin'''
-
+from decimal import InvalidOperation
+from unittest.mock import patch
 import pytest
 from app.plugins.calc import CalcCommand
 
@@ -16,24 +17,23 @@ def test_calc_command_valid_operations(capsys, val_a, val_b, operation, expected
     captured = capsys.readouterr()
     assert expected_result in captured.out
 
-def test_calc_command_unknown_operation(capsys):
-    ''' incorrect operation '''
-    CalcCommand.run_calculations("1", "1", "unknown")
-    captured = capsys.readouterr()
-    assert "Unknown operation: unknown" in captured.out
+def test_calc_command_unknown_operation():
+    ''' Test for incorrect operation '''
+    with patch('logging.error') as mock_error:
+        CalcCommand.run_calculations("1", "1", "unknown")
+        mock_error.assert_called_with("Unknown operation: unknown")
 
 def test_calc_command_invalid_number_input(capsys):
     ''' Non number input'''
-    CalcCommand.run_calculations("a", "1", "add")
-    captured = capsys.readouterr()
-    assert "Invalid number input: a or 1 is not a valid number." in captured.out
+    with patch('logging.error') as mock_error:
+        CalcCommand.run_calculations("a", "1", "add")
+        mock_error.assert_called_with(f"Invalid number input: a or 1 is not a valid number: {InvalidOperation}")
 
 def test_calc_command_division_by_zero(capsys):
     ''' Divide by zero'''
-    CalcCommand.run_calculations("1", "0", "divide")
-    captured = capsys.readouterr()
-    assert "An error occurred: Cannot divide by zero." in captured.out
-
+    with patch('logging.error') as mock_error:
+        CalcCommand.run_calculations("1", "0", "divide")
+        mock_error.assert_called_with("An error occurred: Cannot divide by zero.")
 
 def test_execute_with_valid_input(capsys):
     ''' tests Execute command with valid input'''

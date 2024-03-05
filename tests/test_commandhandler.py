@@ -1,5 +1,5 @@
 '''Tests Command Handler'''
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import pytest
 from app.commands import Command, CommandHandler
 
@@ -23,10 +23,9 @@ def test_command_execute():
 
 def test_handler_index_error(capsys):
     ''' tests index error occurance'''
-    CommandHandler().execute_command(command_line="")
-    captured = capsys.readouterr()
-
-    assert captured.out == "No command entered.\n"
+    with patch('logging.error') as mock_error:
+        CommandHandler().execute_command(command_line="")
+        mock_error.assert_called_with("IndexError: No command entered\n")
 
 def test_execute_valid_command_with_parameters(capfd, command_handler):
     ''' tests if command can run with parameters'''
@@ -44,21 +43,19 @@ def test_execute_valid_command_without_parameters(capfd, command_handler):
 
 def test_execute_unknown_command(capfd, command_handler):
     ''' tests if command can run with nonexistent command'''
-    command_handler.execute_command('unknown')
-    captured = capfd.readouterr()
-    assert "Command 'unknown' not found." in captured.out
+    with patch('logging.error') as mock_error:
+        command_handler.execute_command('unknown')
+        # captured = capfd.readouterr()
+        mock_error.assert_called_with("Command 'unknown' not found.")
 
-def test_execute_no_input(capfd, command_handler):
-    ''' tests if command can run with no input'''
-    command_handler.execute_command('')
-    captured = capfd.readouterr()
-    assert "No command entered." in captured.out
 
 def test_execute_command_with_exception(capfd, command_handler):
     ''' tests if command can run with raising exceptions'''
-    test_command = TestCommand()
-    test_command.execute = MagicMock(side_effect=Exception("Test exception"))
-    command_handler.register_command('error', test_command)
-    command_handler.execute_command('error')
-    captured = capfd.readouterr()
-    assert "Error executing command 'error': Test exception" in captured.out
+
+    with patch('logging.error') as mock_error:
+        test_command = TestCommand()
+        test_command.execute = MagicMock(side_effect=Exception("Test exception"))
+        command_handler.register_command('error', test_command)
+        command_handler.execute_command('error')
+        # captured = capfd.readouterr()
+        mock_error.assert_called_with("Error executing command 'error': Test exception")
